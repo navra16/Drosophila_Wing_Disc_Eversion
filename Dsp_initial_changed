@@ -1,0 +1,135 @@
+Loading centos/7.9
+  Loading requirement: singularity-ce/3.9.3
+GID: readonly variable
+UID: readonly variable
+3
+argc: 1
+arg: -dt=0.001
+pos: 3
+key: -dt
+val: 0.001
+setting timestep: 0.001
+Setting tau: 0
+Setting kbt: 1
+Setting linear const: 40
+Setting area const: 40
+Setting bending const: 20
+Setting lj eps: 20
+Setting lj rmin: 0.15
+Setting lj rmax: 3.90512
+Setting lj const: 1
+Setting lj x: 0
+Setting lj y: 0
+Setting lj z: -1.5
+parse node success
+parse link success
+parse elem success
+parse elem2edge success
+parse nndata success
+parse edge2elem success
+parse capsid node success
+parse fixnode success
+Initializing
+num nodes: 2083
+num edges: 6066
+num elems: 3984
+Copying
+fixed_node_in_host: 
+end_of_fixed_node_host_printout
+fixed_node_in_device: 
+end_of_fixed_node_device_printout
+size of host fixed 2083
+size of device fixed 8332
+Mem
+Host_nodeLocX size = 8332
+Host_nodeForceX size = 8332
+Host_triangles2Nodes size = 15936
+Host_triangles2Edges size = 15936
+Host_edges2Nodes size = 24264
+Host_edges2Triangles size = 24264
+System Ready
+solving system in main
+current_edge_to_tip_height_scale = 2.14748e+09
+current_edge_to_tip_height_scale for edge-swap = 2.14748e+09
+bdry_to_tip_height_scale = 2.14748e+09
+Are we simulating a case where restiffening or the restoration (even just partially) of mechanical properties? 0 (bool) 
+relax max steps before growth and edgeswap = 3000*max_runTime
+Declaration of rbc and n_rbc complete.
+Utilities_ptr declaration complete.
+Cell height = 0
+Determination of max triangle and min cell height complete.
+min_num_edge_loop for edgeswap = 1
+MAX_GROWTH_NUMBER (# of edge to expand) per growth event = 1
+GROWTH_FREQ (how many times Max_Runtime has to be reached to perform growth25
+GROWTH_FREQ2 (how many times Max_Runtime has to be reached to perform growth, for variable ES rate cases25
+Point of transition describes the ratio of the total time simulation time is reached for relaxation (edge-swap) frequency to change : 0.1
+Point of transition is also used to indicate if strain_threshold needs to change or not
+ENERGY_GRADIENT_THRESHOLD = 0.02
+SCALE TYPE = 3
+0:= sigmoidal Gaussian-like weakening, 1:= a1*(pow(x,b)) + a2*(1-pow(x,b)) type weakening, 2:= pure Gaussian weakening, 3:= isotropic, 4:= hill equation
+GROWTH: material insertion energy cost (dependent on local chemical concentration) = 5.99146
+GROWTH: critical strain threshold used for insertion probability calculation = 0.05, value loaded = 0.05
+GROWTH: critical strain threshold used for insertion probability calculation if changes are needed= 0.05
+GROWTH ENERGY SCALING FOR MATERIAL INSERTION PROBABILITY = 1
+NEIGHBOR SAFE GUARD THRESHOLD = 9
+Max runtime = 0.01
+Max runstep = 10
+Sample size: 2
+Record frequency = 1
+recentering of the model cell frequency = 10
+Number of edge-swap per kBT value (or total number of edge-swap if kBT is fixed) = 10
+GROWTH FREQ SCALE: decides how many growth event must be checked before recording the result = 4
+min kT for simulation termination = -0.1
+LINE TENSION THRESHOLD for activation of line tension = -10000
+VOLUME THRESHOLD for activation of weakened membrane = 0
+abs_Rmin = 0.15
+equilibrium triangular area = 0.039
+Morse_NM_D_att = 0
+Morse_NM_a_att = 0
+Morse_NM_D_rep = 0
+Morse_NM_a_rep = 0
+Morse_NN_D = 0
+Morse_NN_a = 0
+Membrane volume exclusion Morse D = 0.01
+Membrane volume exclusion Morse a = 9
+spring constant for surface normal expansion (pressure within the cell) = 0.2
+spring constant for the septin ring (before budding) = 0
+weakened region linear (before budding) = 40
+weakened region bend (before budding) = 20
+weakened region area (before budding) = 40
+equilibrium bending angle of the membrane = 0.5
+equilibrium bending angle of the bud = 0.5
+manual push speed for the nucleus tip = 0
+manual push speed for the remainder of the nucleus = 0
+INITIAL EDGES IN UPPERHEM = 6066
+size of boundary_node_list (this is double-counted) = 0
+Initial volume = 2.48217e-317
+dtb = 0
+initial distance between cell tip and the boundary of weakened area = 0
+Notice that here, the distance from the tip to the boundary is slightly extended by half of the equilibrium length of an edge
+STARTING THE ACTUAL SIMULATION
+Time used for 'steady state' initial condition before growth and edge swaps = 30
+current total energy (before growth and edge swaps) = -nan
+LINEAR ENERGY = inf
+BEND ENERGY = -nan
+AREA ENERGY = inf
+VOLUME ENERGY = inf
+true_current_total_volume (before growth and edge swaps) = 1150.08
+current KBT = 1
+Initial bud surface area (before growth and edge swaps) = -nan
+spring constant for surface normal expansion (pressure within the cell) = 0.2
+spring constant for the septin ring = 0
+equilibrium length of each segment of the septin ring = 1
+maxSpringScaler_linear (not 1.0 if we want max linear spring in the hill function scaling not equal to mother cell) = 1
+maxSpringScaler_area (not 1.0 if we want max area spring in the hill function scaling not equal to mother cell) = 1
+maxSpringScaler_bend (not 1.0 if we want max bend spring in the hill function scaling not equal to mother cell) = 1
+weakened region linear = 40
+weakened region bend = 20
+weakened region area = 40
+true current total volume = 1150.08
+eq total volume = 2300.16
+equilibrium length of each segment of the septin ring = 0.15
+equilibrium length of the septin ring = 0
+GROWTH FREQUENCY CHANGED to mimic increase relaxation (ES) between growth attempts
+Allowed number of simulation steps reached. Simulation terminated.
+Total time hh: 0 mm:3 ss:38

@@ -2,6 +2,7 @@
 #define LINEARSPRINGSENERGY_H_ 
 
 #include "SystemStructures.h"
+#include <cstdio>
 
 double ComputeLinearSpringsEnergy(
     GeneralParams& generalParams,
@@ -66,7 +67,9 @@ struct LinearSpringEnergyFunctor {
                 energy = 0.0;
 
 		}
-        
+       
+    //std::cout << "Current Length (linear springs energy) = "<<length_current<<". Zero length (same file) = " << length_zero<< std::endl;
+        printf("current_len = %g, zero_len = %g\n", length_current, length_zero);
         //double energy = (spring_constant/2.0) * (length_current - length_zero) * (length_current - length_zero);
         return energy;
 

@@ -19,6 +19,8 @@
 #include <math.h>
 #include <list>
 #include "TurgorForce.h"
+#include "LinearSpringsEnergy.h"
+
 
 //somehow the gradient is not being set in my version - Kevin
 
@@ -58,7 +60,7 @@ void System::Solve_Forces(){
   		//areaTriangleInfoVecs
   	//);
   	
-    //Compute forces and energy due to bending springs. 
+    //Compute forces and energy due to bending springs. Turn this off 10/10/24
   	ComputeCosTriangleSprings(  		
   		generalParams,
   		coordInfoVecs,  
@@ -262,7 +264,7 @@ generalParams.kT_growth = 1.0;
 // 3:= isotropic
 // 4:= hill equation
 //Note that (3) is used in combination with sigma = INT_MAX;
-generalParams.SCALE_TYPE = 3; // Original scale type was 3. Nav changed it to 0 for flat code. 6/2/24.
+generalParams.SCALE_TYPE = 3; // Original scale type was 3. Nav changed it to 0 for flat code. 6/2/24. \\ 0 did not work so nav changed it back to 3 8/18/24
 std::cout<<"SCALE TYPE = "<<generalParams.SCALE_TYPE<<std::endl;
 std::cout<<"0:= sigmoidal Gaussian-like weakening, 1:= a1*(pow(x,b)) + a2*(1-pow(x,b)) type weakening, 2:= pure Gaussian weakening, 3:= isotropic, 4:= hill equation"<<std::endl;
 
@@ -351,7 +353,7 @@ int TOTAL_GROWTH_COUNTER = 0;
 int TOTAL_GROWTH_ATTEMPT = 0;
 
 // Set the maximum runtime for the simulation (in time units)
-double Max_Runtime = generalParams.dt*10.0;//generalParams.dt*50.0; Nav commented out this last part for flat code 6/5/24. //50.0; time units //time step is here. Nav
+double Max_Runtime =generalParams.dt*10.0;//*50.0; nav commented this out for double sheet testing. 9/16/2024. //generalParams.dt*10.0;//generalParams.dt*50.0; Nav commented out this last part for flat code 6/5/24. //50.0; time units //time step is here. Nav has once again commented out the __.dt*10 to make it run longer. 8/2/24
 double minimal_run_time_ratio = 1.0; // Not used in this section.
 double Max_RunStep = Max_Runtime/generalParams.dt; // Calculate the maximum runstep based on the max runtime.
 std::cout<<"Max runtime = "<<Max_Runtime<<std::endl;
@@ -382,9 +384,9 @@ int translate_frequency = 10;
 std::cout<<"recentering of the model cell frequency = "<<translate_frequency<<std::endl;
 
 // Set the total number of growth events and targeted growth events for the simulation.
-int NUMBER_OF_GROWTH_EVENT = 200;//2000 - nav changed this for flat code. 6/2/24;//1000;//1000*2; // Total number of growth events.
+int NUMBER_OF_GROWTH_EVENT = 1000;//200;//2000 - nav changed this for flat code. 6/2/24;//1000;//1000*2; // Total number of growth events. // Nav once again changed it to 1000 from 200. 8/26/24
 int NUMBER_OF_TARGETED_GROWTH_EVENT = 1; // Number of targeted growth events.
-int NKBT = 10; // GROWTH_FREQUENCY*NUMBER_OF_GROWTH_EVENT*2; Nav changed this last one for the flat code. 6/5/24.//GROWTH_FREQUENCY*NUMBER_OF_GROWTH_EVENT;//10000;//7500; 
+int NKBT = GROWTH_FREQUENCY*NUMBER_OF_GROWTH_EVENT*2;//10; // GROWTH_FREQUENCY*NUMBER_OF_GROWTH_EVENT*2; Nav changed this last one for the flat code. 6/5/24.//GROWTH_FREQUENCY*NUMBER_OF_GROWTH_EVENT;//10000;//7500; Nav is now changing it back from 10 to turn growth on. 8/26/24
 std::cout<<"Number of edge-swap per kBT value (or total number of edge-swap if kBT is fixed) = "<<NKBT<<std::endl;
 
 int GROWTH_FREQUENCY_SCALE = 4;
@@ -450,7 +452,7 @@ double VOLUME_THRESHOLD = 0.0;
 std::cout<<"VOLUME THRESHOLD for activation of weakened membrane = "<<VOLUME_THRESHOLD<<std::endl;
 
 // The minimum height of the z-coordinate of the membrane node to be considered in the area of weakened mechanical properties.
-double weakened = 1.90;//6.0;
+double weakened =0.0; //1.90;//6.0; Nav changed it from 1.90 t0 0.0 to have weakened area increased. 8/26/24
 
 //double tip_base = 6.0;
 //tip_base currently unused.
@@ -494,14 +496,14 @@ for (int k = 0; k < generalParams.maxNodeCount; k++){
 	//Max and min height of the membrane nodes, these have to be changed if the mesh used is changed.
 
 // Set the equilibrium length of an edge of the triangle. 
-generalParams.Rmin = 0.0001;//0.3012; changed by nav on 6/5/24 for flat code. //0.15; //equilibrium length (Nav) changed by nav again to 0.5 from 0.15. 8/5/24
+generalParams.Rmin = 0.75;//0.5; nav changed this once again. Made it larger 11/7/24 //0.0001; nav changed this on 10/10/24 for the double layer code. This value of 0.0001 works for the circular sheet. //0.3012; changed by nav on 6/5/24 for flat code. //0.15; //equilibrium length (Nav) changed by nav again to 0.5 from 0.15. 8/5/24 11/8/24 5 worked for small number of nodes. < Nav
 
 generalParams.abs_Rmin = generalParams.Rmin;//0.15;
 std::cout<<"abs_Rmin = "<<generalParams.abs_Rmin<<std::endl;
 
 //Equilibrium distance between membrane node for volume exclusion.
 // Initialize the following which represents the equilibrium triangular area.
-areaTriangleInfoVecs.initial_area = 0.039;//2835;//0.009808;//0.039;//0.03927344;//0.009817;
+areaTriangleInfoVecs.initial_area = 1.0;//0.039;nav changed this to make it larger 11/7/24 //2835;//0.009808;//0.039;//0.03927344;//0.009817; 11/8/24 25 worked for small number of nodes. < Nav
 std::cout<<"equilibrium triangular area = "<<areaTriangleInfoVecs.initial_area<<std::endl;
 	
 // Set ljInfoVecs parameters (currently all set to 0.0, indicating no interactions).
@@ -558,9 +560,10 @@ generalParams.length_scale = 0.0;//0.85;//0.1577;//1.0*generalParams.Rmin;// 0.8
 generalParams.maxSpringScaler_linear = 1.0;
 generalParams.maxSpringScaler_area = 1.0;
 generalParams.maxSpringScaler_bend = 1.0;
-double scale_linear = linearSpringInfoVecs.spring_constant*1;//0.25;//25.0/2.5;//75.0/15.0; flat sheet generated when multiplied by 1; 8/15/24; Changing it to 0.25 makes it wrinkle up from before. Same with all three below 8/15/24
+double scale_linear = linearSpringInfoVecs.spring_constant*0.25;//0.25;//25.0/2.5;//75.0/15.0; flat sheet generated when multiplied by 1; 8/15/24; Changing it to 0.25 makes it wrinkle up from before. Same with all three below 8/15/24
 double scale_bend = bendingTriangleInfoVecs.spring_constant*1;//0.05;//10.0/1.0;//75.0/7.5;  flat sheet generated when multiplied by 1; 8/15/24; 
-double scale_area = areaTriangleInfoVecs.spring_constant*1;//0.25;//50.0/5.0;//75.0/15.0;  flat sheet generated when multiplied by 1; 8/15/24;
+double scale_area = areaTriangleInfoVecs.spring_constant*0.25;//0.25;//50.0/5.0;//75.0/15.0;  flat sheet generated when multiplied by 1; 8/15/24;
+//nav changed all of the above to their original values to see how it affects budding. 8/26/24
 std::cout<<"weakened region linear (before budding) = "<<scale_linear<<std::endl;
 std::cout<<"weakened region bend (before budding) = "<<scale_bend<<std::endl;
 std::cout<<"weakened region area (before budding) = "<<scale_area<<std::endl;
@@ -686,8 +689,70 @@ for (int i = 0; i < coordInfoVecs.num_edges; ++i){
 auto it = remove_if(edgeIndices.begin(), edgeIndices.end(),  [](const int i) {return i < 0; });
 edgeIndices.erase(it, edgeIndices.end());
 	
-// Define a row2 vector to store specific node indices.
-std::vector<int> row2 = {35 ,   76 ,   79 ,  111 ,  113 ,  151 ,  153 ,  360 ,  361 ,  362 ,  363 ,  364 ,  365 ,  505 ,  506 ,  515 ,  516 ,  593 ,  632};
+// Moved boundary part 8/26/24 nav
+  //Find the boundary of the nodes_in_upperhem region
+	//generalParams.boundaries_in_upperhem.resize(coordInfoVecs.num_edges);
+	std::vector<int> boundary_node_list;
+	std::vector<int> boundary_edge_list;
+	for (int i = 0; i < coordInfoVecs.num_edges; i++){
+		double T1 = coordInfoVecs.edges2Triangles_1[i];
+		double T2 = coordInfoVecs.edges2Triangles_2[i];
+		if (T1 >= (INT_MAX - 1000) || T1 < 0 || T2 >= (INT_MAX-1000) || T2 < 0){
+			continue;
+		}
+		if (generalParams.triangles_in_upperhem[T1] == 1 && generalParams.triangles_in_upperhem[T2] == 1){
+			generalParams.boundaries_in_upperhem[i] = 1;
+			//std::cout<<generalParams.boundaries_in_upperhem[i]<<std::endl;
+		  generalParams.triangles_in_upperhem[T1] = 0;
+			generalParams.triangles_in_upperhem[T2] = 0;
+			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
+			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
+			//std::cout<<"septin ring nodes - bdrynode1 = "<<bdry_node1<<std::endl;
+      boundary_node_list.push_back(bdry_node1);
+			boundary_node_list.push_back(bdry_node2);
+			boundary_edge_list.push_back(i);
+      
+      
+			//generalParams.nodes_in_upperhem[bdry_node1] = 0;
+			//generalParams.nodes_in_upperhem[bdry_node2] = 0;
+			//coordInfoVecs.isNodeFixed[bdry_node1] = true;
+			//coordInfoVecs.isNodeFixed[bdry_node2] = true;
+		}
+	/*	else if (generalParams.triangles_in_upperhem[T1] != 1 && generalParams.triangles_in_upperhem[T2] == 1){
+			generalParams.boundaries_in_upperhem[i] = 1;
+			std::cout<<generalParams.boundaries_in_upperhem[i]<<std::endl;
+			generalParams.triangles_in_upperhem[T1] = 0;
+			generalParams.triangles_in_upperhem[T2] = 0;
+			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
+			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
+			boundary_node_list.push_back(bdry_node1);
+			boundary_node_list.push_back(bdry_node2);
+			boundary_edge_list.push_back(i);
+			//generalParams.nodes_in_upperhem[bdry_node1] = 0;
+			//generalParams.nodes_in_upperhem[bdry_node2] = 0;
+		 coordInfoVecs.isNodeFixed[bdry_node1] = true;
+		 coordInfoVecs.isNodeFixed[bdry_node2] = true;
+		}*/
+		else {
+			generalParams.boundaries_in_upperhem[i] = -1;
+		  //std::cout<<generalParams.boundaries_in_upperhem[i]<<std::endl;
+		}
+	}
+
+std::cout<<"size of boundary_node_list (this is double-counted) = "<<boundary_node_list.size()<<std::endl;
+
+// Count the true number of edges in the upper hemisaphere.
+int true_num_edges_in_upperhem = 0;
+for (int i = 0; i < coordInfoVecs.num_edges; i++){
+		if (generalParams.edges_in_upperhem_list[i] != INT_MAX && generalParams.edges_in_upperhem_list[i] >= 0){
+		    true_num_edges_in_upperhem += 1;
+		}
+}
+
+ 
+// Define a row2 vector to store specific node indices. These are the specific nodes in the septin ring. Nav replaced the following hard coded row with a boundary node list from the segment of code she moved. 8/26/24
+std::vector<int> row2 = boundary_node_list;//{35 ,   76 ,   79 ,  111 ,  113 ,  151 ,  153 ,  360 ,  361 ,  362 ,  363 ,  364 ,  365 ,  505 ,  506 ,  515 ,  516 ,  593 ,  632};
+//nav commenting the above out to see if row2 can be defined later for the septin ring. 8/19/24 nav putting these back in. 
 
 // Identify nodes in the upper hemisphere based on their z-coordinates.
 for (int i = 0; i < generalParams.maxNodeCount; i++){
@@ -696,8 +761,8 @@ for (int i = 0; i < generalParams.maxNodeCount; i++){
   //std::cout<<"nodes in upperhem = "<<generalParams.nodes_in_upperhem[i]<<std::endl;
 }
 
-//Nav commented out the following for flat virus code 5/29/24
-/*for (int i = 0; i < row2.size(); i++){
+//Nav commented out the following for flat virus code 5/29/24. nav put it back in 8/19/24
+for (int i = 0; i < row2.size(); i++){
 		generalParams.nodes_in_upperhem[row2[i]] = 1;
 }
 
@@ -715,8 +780,8 @@ for (int i = 0; i < generalParams.maxNodeCount; i++){
 			generalParams.nodes_in_upperhem[i] = 1;
 		}
 }
-*/
-// Identify triangles in the upper hemisaphere based on their nodes.
+
+// Identify triangles in the upper hemisaphere based on their nodes. nav uncommented till line 745 for tests 8/19/24
 for (int i = 0; i < coordInfoVecs.num_triangles; i++){
 		if (coordInfoVecs.triangles2Nodes_1[i] >= (INT_MAX-1000) || coordInfoVecs.triangles2Nodes_1[i] < 0){
 			generalParams.triangles_in_upperhem[i] = -1;
@@ -847,67 +912,12 @@ for (int i = 0; i < coordInfoVecs.num_edges; i++){
 			//generalParams.boundaries_in_upperhem[i] = -1;
 	//	}
 //}*///Nav commented the above out to test her own version 6/4/24
- 
+// This is where the boundary part labelled (moved boundary part) was originally. 8/26/24 
 //Nav commented this out to restore to original version to make changes once more. Let's see! 8/5/24
 
 // If conditions on 815 and 830 in the original code need to be changed to reflect boundary condition ie T1==T2 - nav
 
-  //Find the boundary of the nodes_in_upperhem region
-	//generalParams.boundaries_in_upperhem.resize(coordInfoVecs.num_edges);
-	std::vector<int> boundary_node_list;
-	std::vector<int> boundary_edge_list;
-	for (int i = 0; i < coordInfoVecs.num_edges; i++){
-		double T1 = coordInfoVecs.edges2Triangles_1[i];
-		double T2 = coordInfoVecs.edges2Triangles_2[i];
-		if (T1 >= (INT_MAX - 1000) || T1 < 0 || T2 >= (INT_MAX-1000) || T2 < 0){
-			continue;
-		}
-		if (generalParams.triangles_in_upperhem[T1] == 1 && generalParams.triangles_in_upperhem[T2] == 1){
-			generalParams.boundaries_in_upperhem[i] = 1;
-			std::cout<<generalParams.boundaries_in_upperhem[i]<<std::endl;
-		  generalParams.triangles_in_upperhem[T1] = 0;
-			generalParams.triangles_in_upperhem[T2] = 0;
-			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
-			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
-			boundary_node_list.push_back(bdry_node1);
-			boundary_node_list.push_back(bdry_node2);
-			boundary_edge_list.push_back(i);
-			//generalParams.nodes_in_upperhem[bdry_node1] = 0;
-			//generalParams.nodes_in_upperhem[bdry_node2] = 0;
-			//coordInfoVecs.isNodeFixed[bdry_node1] = true;
-			//coordInfoVecs.isNodeFixed[bdry_node2] = true;
-		}
-	/*	else if (generalParams.triangles_in_upperhem[T1] != 1 && generalParams.triangles_in_upperhem[T2] == 1){
-			generalParams.boundaries_in_upperhem[i] = 1;
-			std::cout<<generalParams.boundaries_in_upperhem[i]<<std::endl;
-			generalParams.triangles_in_upperhem[T1] = 0;
-			generalParams.triangles_in_upperhem[T2] = 0;
-			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
-			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
-			boundary_node_list.push_back(bdry_node1);
-			boundary_node_list.push_back(bdry_node2);
-			boundary_edge_list.push_back(i);
-			//generalParams.nodes_in_upperhem[bdry_node1] = 0;
-			//generalParams.nodes_in_upperhem[bdry_node2] = 0;
-		 coordInfoVecs.isNodeFixed[bdry_node1] = true;
-		 coordInfoVecs.isNodeFixed[bdry_node2] = true;
-		}*/
-		else {
-			generalParams.boundaries_in_upperhem[i] = -1;
-		  std::cout<<generalParams.boundaries_in_upperhem[i]<<std::endl;
-		}
-	}
-
-std::cout<<"size of boundary_node_list (this is double-counted) = "<<boundary_node_list.size()<<std::endl;
-
-// Count the true number of edges in the upper hemisaphere.
-int true_num_edges_in_upperhem = 0;
-for (int i = 0; i < coordInfoVecs.num_edges; i++){
-		if (generalParams.edges_in_upperhem_list[i] != INT_MAX && generalParams.edges_in_upperhem_list[i] >= 0){
-		    true_num_edges_in_upperhem += 1;
-		}
-}
-
+  
 // Initialize the generalParams.edge_to_ljparticle vector to store the connection between an edge and LJ particle (nucleus particle).	
 for (int i = 0; i < coordInfoVecs.num_edges; i++){
 		generalParams.edge_to_ljparticle.push_back(-1);
@@ -1024,14 +1034,13 @@ while (runSim == true){
         // Calculate the total energy of the system.
         new_total_energy = linearSpringInfoVecs.linear_spring_energy + 
                 areaTriangleInfoVecs.area_triangle_energy + 
-                bendingTriangleInfoVecs.bending_triangle_energy;// + 
-                0.5*energy_rep; // Add other energy contributions if needed.
+                bendingTriangleInfoVecs.bending_triangle_energy;// + 0.5*energy_rep; // Add other energy contributions if needed.
                 
                 
         old_total_energy = new_total_energy;
         current_time+=generalParams.dt;
     }
-
+   
 		// Print simulation results for "steady state" initial condition before growth and edge swaps.
     std::cout<<"Time used for 'steady state' initial condition before growth and edge swaps = "<<current_time<<std::endl;
 		std::cout<<"current total energy (before growth and edge swaps) = "<<new_total_energy<<std::endl;
@@ -1041,7 +1050,12 @@ while (runSim == true){
 		std::cout<<"VOLUME ENERGY = "<<generalParams.volume_energy<<std::endl;
 		std::cout<<"true_current_total_volume (before growth and edge swaps) = "<<generalParams.true_current_total_volume<<std::endl;
 		std::cout<<"current KBT = "<<generalParams.kT<<std::endl;
-		
+	
+    if (std::isnan(new_total_energy)) {
+    std::cout<<"Total Energy is NaN. Exit of (-1) in System.cu main function."<<std::endl;
+    exit(-1);}
+    	
+   
     double current_bud_area = 0.0;
 		// Calculate the current area of the bud region.
     for (int k = 0; k < coordInfoVecs.num_triangles; k++){
@@ -1064,6 +1078,9 @@ while (runSim == true){
       					double norm_r1r2 = sqrt((r2x-r1x)*(r2x-r1x) + (r2y-r1y)*(r2y-r1y) + (r2z-r1z)*(r2z-r1z));
       					double norm_r2r3 = sqrt((r3x-r2x)*(r3x-r2x) + (r3y-r2y)*(r3y-r2y) + (r3z-r2z)*(r3z-r2z));
       					double norm_r3r1 = sqrt((r3x-r1x)*(r3x-r1x) + (r3y-r1y)*(r3y-r1y) + (r3z-r1z)*(r3z-r1z));
+                       //std::cout<<"norm r1r2 = "<<norm_r1r2<<std::endl;
+                       //std::cout<<"norm r2r3 = "<<norm_r2r3<<std::endl;
+                       //std::cout<<"norm r3r1 = "<<norm_r3r1<<std::endl;
       					double s = (norm_r1r2 + norm_r2r3 + norm_r3r1)/2.0;
       					double area = sqrt(s*(s-norm_r1r2)*(s-norm_r2r3)*(s-norm_r3r1));
       					current_bud_area += area;
@@ -1099,9 +1116,9 @@ while (runSim == true){
 		
    // nav is changing all of the following so they remain consistent for flat code. 5/29/24.
     // Scale the spring constants for the weakened region.
-    double scale_linear = linearSpringInfoVecs.spring_constant*1.0;//0.75;//0.25;//25.0/2.5;//75.0/15.0; // Scaling factor for linear springs. 
-		double scale_bend = bendingTriangleInfoVecs.spring_constant*1.0;//0.135;//0.05;//10.0/1.0;//75.0/7.5; // // Scaling factor for bending springs. Nav changed this on 7/23/24. Nav changed these from 10 to 1. 8/5/24
-		double scale_area = areaTriangleInfoVecs.spring_constant*1.0;//0.75;//0.25;//50.0/5.0;//75.0/15.0; // // Scaling factor for area springs.
+    double scale_linear = linearSpringInfoVecs.spring_constant*0.75;//0.75;//0.25;//25.0/2.5;//75.0/15.0; // Scaling factor for linear springs. 
+		double scale_bend = bendingTriangleInfoVecs.spring_constant*0.135;//0.135;//0.05;//10.0/1.0;//75.0/7.5; // // Scaling factor for bending springs. Nav changed this on 7/23/24. Nav changed these from 10 to 1. 8/5/24
+		double scale_area = areaTriangleInfoVecs.spring_constant*0.75;//0.75;//0.25;//50.0/5.0;//75.0/15.0; // // Scaling factor for area springs. nav changed all three of the above for the growth 8/26/24 It was 1 originally. 
    // Check paper to see if those parameters have been mentioned. ^ Kevin's paper (Task) (nav) These are not the parameters that need to be changed. Those are to do with the individual spring changes in the original code and not this one. 
    // We would be changing the scaling factors 0.75 and 0.135. 
    // reduce the bending spring scaling factor.
@@ -1129,7 +1146,7 @@ while (runSim == true){
 
 		int LINE_TENSION_START = 0;
 		
-		bool WEAKENED_START = false;
+		bool WEAKENED_START = false; // nav is now changing this as well from false to true 8/26/24. Nav changed it back to false 8/26/24
 		bool EDGESWAP_ALGORITHM_TRIGGERED;
 		bool needToRebuildDiffStructAfterEdgeSwap = false;
 		int number_of_simulation_step = 0;
@@ -1167,7 +1184,7 @@ while (runSim == true){
             std::cout<<"equilibrium length of each segment of the septin ring = "<<generalParams.length_scale*generalParams.Rmin<<std::endl;
   					generalParams.eq_total_boundary_length = COUNT*generalParams.length_scale* generalParams.Rmin;
   					std::cout<<"equilibrium length of the septin ring = "<<generalParams.eq_total_boundary_length<<std::endl;
-  					LINE_TENSION_START += 1;
+  					//LINE_TENSION_START += 1; Nav commented this out because septin ring is no longer being used. 11/8/24.
 	
 				
 			}
@@ -1242,11 +1259,11 @@ while (runSim == true){
     		}
     
     		// Recompute the volume of the system after the translation
-        /*ComputeVolume(
+        ComputeVolume(
     			generalParams,
     			coordInfoVecs,
     			linearSpringInfoVecs,
-    			ljInfoVecs);*/ //nav chanegd this for the flat code. 5/29/24
+    			ljInfoVecs); 
 
     }
 
@@ -1394,14 +1411,14 @@ if (generalParams.SCALE_TYPE ==4){
 			std::mt19937 generator_edgeswap(rand_dev());
 			
       // Calculate and update volume
-     /* ComputeVolume(
+      ComputeVolume(
 					generalParams,
 					coordInfoVecs,
 					linearSpringInfoVecs,
-					ljInfoVecs); */ // nav changed this for the flat code. 5/29/24
+					ljInfoVecs);  
       
-      // Check if volume ratio conditions are met for termination.
-      if ((generalParams.true_current_total_volume/initial_volume) < 0.6 || generalParams.true_current_total_volume/initial_volume >= MAX_VOLUME_RATIO){
+      // Check if volume ratio conditions are met for termination. Nav commenting these out because volume termination does not count over here 8/26/24. Nav uncommented these because the volume termination now counts. 11/7/24
+     if ((generalParams.true_current_total_volume/initial_volume) < 0.6 || generalParams.true_current_total_volume/initial_volume >= MAX_VOLUME_RATIO){
 					
           // Update true_num_edges and store data before terminating the simulation
           generalParams.true_num_edges = 0;
@@ -1428,7 +1445,7 @@ if (generalParams.SCALE_TYPE ==4){
           std::cout<<"Current number of edgeswap iteration performed at volume-related termination = "<<edgeswap_iteration<<std::endl;
 					std::cout<<"Current number of simulation step at volume-related termination = "<<number_of_simulation_step<<std::endl;
           
-          // Termination simulation
+          // Termination simulation. Nav commented out for testing without volume thresholds 8/26/24
 					Max_Runtime = 0.0;
 					runSim = false;
 					initial_kT = -1;
@@ -1560,7 +1577,7 @@ if (bdry_to_tip_height >= (generalParams.Rmin*bdry_to_tip_height_scale) && isRes
 }	
 
 // Determine the number of edges for edge swapping.
-num_edge_loop = SAMPLE_SIZE; // round(true_num_edges_in_upperhem*SAMPLE_SIZE);
+num_edge_loop = round(true_num_edges_in_upperhem*SAMPLE_SIZE);//SAMPLE_SIZE;<nav commented out and replaced with this 10/26/24 >  // round(true_num_edges_in_upperhem*SAMPLE_SIZE);
 
 // Handle cases where the number of edges is less than min.
 if (num_edge_loop <= min_num_edge_loop){
@@ -1614,10 +1631,10 @@ for (int edge_loop = 0; edge_loop < true_num_edge_loop; edge_loop++) {
 				}
 			
 
-// Update triangle connectivity after dge swapping			
+// Update triangle connectivity after edge swapping			
 for (int i = 0; i < coordInfoVecs.num_triangles; i++){
 				utilities_ptr->triangles2Triangles_host_vecs(i, build_ptr->hostSetInfoVecs,coordInfoVecs,generalParams, auxVecs);
-}
+}//loook hereeee
 
 // transfer updated data from host to device		
 utilities_ptr->transferHtoD(generalParams, coordInfoVecs, build_ptr->hostSetInfoVecs);//Currently this is treated as a backup of coordInfoVecs
@@ -1742,7 +1759,7 @@ translate_counter += 1;
 		}
 		else{
 			// To turn off growth algorithm make sure that true_GROWTH_FREQUENCY is never zero. 
-      true_GROWTH_FREQUENCY = 3.00; // GROWTH_FREQUENCY; was this but nav changed it for flat code.  
+      true_GROWTH_FREQUENCY = GROWTH_FREQUENCY;// was this but nav changed it for flat code. // nav has changed it back to introduce growth into the equation once more. Let's see what happens. To turn off make it equal to 3.0. 8/26/2024  
       
 		}
 		
@@ -1911,6 +1928,7 @@ translate_counter += 1;
 				if (GROWTH_COUNT >= MAX_GROWTH_PER_GROWTH_EVENT){
 					break; // Stop growth if maximum growth count is reached.
 				}
+        std::cout<<"DELTA = "<<DELTA<<std::endl;
 			}
 
 			// Update total growth attempt counter and transfer data back to the device.

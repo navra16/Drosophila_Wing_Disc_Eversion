@@ -1834,6 +1834,13 @@ void Utilities::triangles2Triangles_host_vecs(
             int edge2_n2 = hostSetInfoVecs.triangles2Nodes_3[elem];
             int edge3_n1 = hostSetInfoVecs.triangles2Nodes_3[elem];
             int edge3_n2 = hostSetInfoVecs.triangles2Nodes_1[elem];
+            
+            if(1 == elem) {
+                std::cout<<"edge1_n = ("<<edge1_n1<<","<<edge1_n2<<")"<<std::endl;
+                std::cout<<"edge2_n = ("<<edge2_n1<<","<<edge2_n2<<")"<<std::endl;
+                std::cout<<"edge3_n = ("<<edge3_n1<<","<<edge3_n2<<")"<<std::endl;
+            }
+            
             if (edge1_n1 != edge3_n2){
                 std::cout<<"error: triangles2Triangles_host_vecs() => SOMETHING WENT WRONG SETTING UP THE NODE ORDER OF EDGES!"<<std::endl;
             }
@@ -1850,6 +1857,14 @@ void Utilities::triangles2Triangles_host_vecs(
                     edge = hostSetInfoVecs.triangles2Edges_3[elem];
                 }
                 
+                if(1 == elem) {
+                    std::cout<<"tri = "<<elem<<"; i = "<<i<<"; edge = "<<edge<<std::endl;
+                    //std::cout<<"edge1_n1="<<edge1_n1<<"; edge1_n2 = "<<edge1_n2<<std::endl; 
+                    std::cout<<"edges2Tri_1 = "<<hostSetInfoVecs.edges2Triangles_1[edge]<<std::endl;
+                    std::cout<<"edges2Tri_2 = "<<hostSetInfoVecs.edges2Triangles_2[edge]<<std::endl;
+                    //std::cout<<"edges2Tri_3 = "<<hostSetInfoVecs.edges2Triangles_3[edge]<<std::endl;
+                    std::cout<<std::endl;
+                }                
                 if ((hostSetInfoVecs.edges2Nodes_1[edge] == edge1_n1 && hostSetInfoVecs.edges2Nodes_2[edge] == edge1_n2) ||
                     (hostSetInfoVecs.edges2Nodes_1[edge] == edge1_n2 && hostSetInfoVecs.edges2Nodes_2[edge] == edge1_n1)){
                         if (hostSetInfoVecs.edges2Triangles_1[edge] == elem){
@@ -1860,6 +1875,10 @@ void Utilities::triangles2Triangles_host_vecs(
                         }
                         else{
                             std::cout<<"error: triangles2Triangles_host_vecs() => SOMETHING WENT WRONG SETTING CORRESPONDING ELEM TO EACH EDGE!"<<std::endl;
+                            std::cout<<"error at here, exit(-1)"<<std::endl;
+                            //exit(-1);
+                            
+                            //return;//nav changed this 10/26/24 - this was not it. so commenting it out. 
                         }
                     }
                 else if ((hostSetInfoVecs.edges2Nodes_1[edge] == edge2_n1 && hostSetInfoVecs.edges2Nodes_2[edge] == edge2_n2) ||
@@ -1872,6 +1891,9 @@ void Utilities::triangles2Triangles_host_vecs(
                         }
                         else{
                             std::cout<<"error: triangles2Triangles_host_vecs() => SOMETHING WENT WRONG SETTING CORRESPONDING ELEM TO EACH EDGE!"<<std::endl;
+                            std::cout<<"error at second place, exit(-1)"<<std::endl;
+                            exit(-1);
+                            
                         }
                     }
                 else if ((hostSetInfoVecs.edges2Nodes_1[edge] == edge3_n1 && hostSetInfoVecs.edges2Nodes_2[edge] == edge3_n2) ||

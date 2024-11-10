@@ -117,3 +117,16 @@ Since it is still not working I am going to turn the growth algorithm on again. 
 Lin constant in the initial parameters file changes the line constant. 
 
 Bend constant being made 1.0 makes it a completely flat sheet. 
+
+8/17/24
+NOTE: I have saved the flat sheet (circular) that has been generated. 8/17/2024
+
+Turning on the turgor pressure makes one tiny corner curl up and around. That needs to be fixed. 
+
+Changed the septin ring stiffness to 50.0 from 0.0 (parameter name = generalParams.line_tension_constant). 
+
+Changed the septin ring length to generalParams.length_scale = 1.0; from 0.0. 
+
+Look into what cell height is in the simulation output. 
+
+The output received after turning on septin ring is very weird and the name is FINALLY_FLAT_turgor_on_septin_ring_50_stiffness_00000.vtk. The septin ring is causing it to be very butt-like and needs to be changed. 

@@ -56,7 +56,7 @@ void ComputeLineTensionSprings(
             thrust::raw_pointer_cast(linearSpringInfoVecs.tempNodeForceYUnreduced.data()),
             thrust::raw_pointer_cast(linearSpringInfoVecs.tempNodeForceZUnreduced.data()) ),
         0.0, thrust::plus<double>() ); 
-      //std::cout<<"linear energy from spring.cu: "<< linearSpringInfoVecs.linear_spring_energy<<std::endl;
+      std::cout<<"linear energy from spring.cu: "<< linearSpringInfoVecs.linear_spring_energy<<std::endl;
     //now we have un reduced forces. Sort by id and reduce. 
     //key, then value. Each vector returns sorted		
    // std::cout<<"ERROR 2"<<std::endl;
@@ -118,6 +118,6 @@ void ComputeLineTensionSprings(
     std::cout<<"partPos: " << coordInfoVecs.nodeLocX[id]<< " "<< coordInfoVecs.nodeLocY[id] << " "<< coordInfoVecs.nodeLocZ[id] << std::endl;
 	std::cout<<"partForce: " << coordInfoVecs.nodeForceX[id]<< " "<< coordInfoVecs.nodeForceY[id] << " "<< coordInfoVecs.nodeForceZ[id] << std::endl;
     */
-    //std::cout<<"Force from linear on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
-           // std::cout<<"LINETENSION"<<std::endl;
+    std::cout<<"Force from linear on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
+           std::cout<<"LINETENSION"<<std::endl;
 };

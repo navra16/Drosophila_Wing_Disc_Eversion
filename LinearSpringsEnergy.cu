@@ -40,6 +40,8 @@ double ComputeLinearSpringsEnergy(
             //thrust::raw_pointer_cast(linearSpringInfoVecs.tempNodeForceZUnreduced.data())),
         0.0, thrust::plus<double>() ); 
         //std::cout<<"linear energy from energy.cu: "<< linearSpringInfoVecs.linear_spring_energy<<std::endl;
-     return linearSpringInfoVecs.linear_spring_energy; 
+        
+        printf("current_len = %g, zero_len = %g\n", length_current, length_zero);
+        return linearSpringInfoVecs.linear_spring_energy; 
 
 };

@@ -12,7 +12,7 @@ setenv LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/afs/crc.nd.edu/x86_64_linux/m/matlab
 #$ -t 1       #specify number of data input files
 
 
-set data = ( Data_structure_circle.xml )
+set data = ( Data_structure_circle_double_layer.xml )
 
 module purge
 module load gcc/7.1.0
